@@ -39,10 +39,10 @@ $di['url'] = function () {
 // Set the database service
 $di['db'] = function () {
     return new DbAdapter([
-        "host"     => getenv('DATA_MYSQL_HOST'),
-        "username" => getenv('DATA_MYSQL_USER'),
-        "password" => getenv('DATA_MYSQL_PASS'),
-        "dbname"   => "gonano",
+        "host"     => getenv('DATA_MYSQL_HOST') ? getenv('DATA_MYSQL_HOST') : '127.0.0.1',
+        "username" => getenv('DATA_MYSQL_USER') ? getenv('DATA_MYSQL_USER') : 'root',
+        "password" => getenv('DATA_MYSQL_PASS') ? getenv('DATA_MYSQL_PASS') : 'root',
+        "dbname"   => "kymatio",
     ]);
 };
 

@@ -2,7 +2,7 @@
 
 use Phalcon\Mvc\Controller;
 
-class SignupController extends Controller
+class EmployeeController extends Controller
 {
     /**
      * Show form to register a new employee

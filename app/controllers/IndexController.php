@@ -5,10 +5,10 @@ use Phalcon\Mvc\Controller;
 class IndexController extends Controller
 {
     /**
-     * Welcome and user list
+     * Welcome and employee list
      */
     public function indexAction()
     {
-        $this->view->users = Users::find();
+        $this->view->employees = Employees::find();
     }
 }

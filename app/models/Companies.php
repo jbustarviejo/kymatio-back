@@ -2,9 +2,10 @@
 
 use Phalcon\Mvc\Model;
 
-class Users extends Model
+class Companies extends Model
 {
     public $id;
     public $name;
-    public $email;
+    public $cif;
+    public $address;
 }
