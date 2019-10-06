@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS `employee_employees`;
+DROP TABLE IF EXISTS `employees`;
 DROP TABLE IF EXISTS `group_groups`;
 DROP TABLE IF EXISTS `groups`;
 DROP TABLE IF EXISTS `companies`;

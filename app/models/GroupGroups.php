@@ -18,7 +18,4 @@ class GroupGroups extends Model
        );
    }
 
-   public function potato(){
-     return 7;
-   }
 }

@@ -14,11 +14,20 @@ class DepartmentController extends Controller
       $departments = $departments->toArray();
       for ($i=0; $i < count($departments); $i++) {
         $sub=GroupGroups::findFirst("group_id=".$departments[$i]['id']);
+        $departments[$i]['risk']=$this->calculateTotalRisk($departments[$i]['id']);
         if($sub){
           $departments[$i]['group_mother_name']=Groups::findFirst("id=".$sub->group_subordinate_id)->name;
         }
       }
       return json_encode($departments);
+    }
+
+    /**
+    * Calculate total risk of a department based on its employees
+    */
+    public function calculateTotalRisk($group_id){
+      $value = $this->db->query('SELECT SUM(risk) as total_risk FROM employees WHERE group_id='.$group_id)->fetchAll()[0][0];
+      return $value ? $value : 0;
     }
 
     /**
@@ -74,7 +83,7 @@ class DepartmentController extends Controller
     /**
      * Delete department
      */
-    public function Action($id=null)
+    public function deleteAction($id=null)
     {
       header('Access-Control-Allow-Origin: *'); //Not secure, but enough for this test scope
       header("Access-Control-Allow-Methods: DELETE");

@@ -5,35 +5,97 @@ use Phalcon\Mvc\Controller;
 class EmployeeController extends Controller
 {
     /**
-     * Show form to register a new employee
+     * Show employees list
      */
-    public function indexAction()
+    public function indexAction($employee_id=null)
     {
+      header('Access-Control-Allow-Origin: *'); //Not secure, but enough for this test scope
+      $employees = Employees::find("group_id=".$this->request->getQuery('department_id', 'int'));
+      $employees = $employees->toArray();
+      for ($i=0; $i < count($employees); $i++) {
+        $sub=EmployeeEmployees::findFirst("employee_id=".$employees[$i]['id']);
+        if($sub){
+          $employees[$i]['employee_boss_name']=Employees::findFirst("id=".$sub->employee_subordinate_id)->name;
+        }
+      }
+      return json_encode($employees);
     }
 
     /**
-     * Register new employee and show message
+     * Register new employee or update an existent one
      */
-    public function registerAction()
+    public function saveAction($id=null)
     {
+      header('Access-Control-Allow-Origin: *'); //Not secure, but enough for this test scope
+      header("Access-Control-Allow-Methods: POST");
+
+      if($id){
+        $employee = Employees::findFirst("id=$id");
+      }else{
         $employee = new Employees();
+        $employee->departmentid = $this->request->getQuery("departmentid");
+      }
+      $employee->type = $this->request->getPost("type");
+      $employee->name = $this->request->getPost("name");
+      $success=$employee->save();
 
-        // Store and check for errors
-        $success = $employee->save(
-            $this->request->getPost(),
-            ['name', 'email']
-        );
-
-        // passing the result to the view
-        $this->view->success = $success;
-
-        if ($success) {
-            $message = "Thanks for registering!";
-        } else {
-            $message = "Sorry, the following problems were generated:<br>" . implode('<br>', $employee->getMessages());
+      if($success){
+        $employee = EmployeeEmployees::findFirst("employee_id=$employee->id");
+        if(!$employee){
+          //no previous employee
+          if($this->request->getPost("employee_boss_id")){
+              //Create
+              $employee = new EmployeeEmployees();
+              $employee->employee_id=$employee->id;
+              $employee->employee_subordinate_id=$this->request->getPost("employee_boss_id");
+              $success = $employee->save();
+          }
+        }else{
+          //Existent previous employee
+          if($this->request->getPost("employee_boss_id")){
+              //Update
+              $employee->employee_id=$employee->id;
+              $employee->employee_subordinate_id=$this->request->getPost("employee_boss_id");
+              $success = $employee->save();
+          }else{
+            //remove
+            $success = $employee->delete();
+          }
         }
+      }
 
-        // passing a message to the view
-        $this->view->message = $message;
+      if ($success) {
+          return json_encode(["ok"=>true]);
+      } else {
+          return json_encode(["ok"=>false]);
+      }
+    }
+
+    /**
+     * Delete employee
+     */
+    public function deleteAction($id=null)
+    {
+      header('Access-Control-Allow-Origin: *'); //Not secure, but enough for this test scope
+      header("Access-Control-Allow-Methods: DELETE");
+
+      $employee = Employees::findFirst($id);
+
+      try {
+        // Store and check for errors
+        if ($employee){
+          $success = $employee->delete();
+        }else{
+          $success=false;
+        }
+      } catch (\Exception $e) {
+        $success = false;
+      }
+
+      if ($success) {
+          return json_encode(["ok"=>true]);
+      } else {
+          return json_encode(["ok"=>false]);
+      }
     }
 }
