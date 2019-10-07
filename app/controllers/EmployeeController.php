@@ -37,18 +37,10 @@ class EmployeeController extends Controller
       }
 
       $employee->name = $this->request->getPost("name");
-      $employee->type = $this->request->getPost("type");
-
-      $success=$employee->save();
-
-      `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-      `name` varchar(70) NOT NULL,
-      `surname` varchar(100) DEFAULT NULL,
-      `email` varchar(70) DEFAULT NULL,
-      `address` varchar(200) DEFAULT NULL,
-      `risk` int DEFAULT 0,
-      `group_id` int unsigned NOT NULL,
-
+      $employee->surname = $this->request->getPost("surname");
+      $employee->email = $this->request->getPost("email");
+      $employee->address = $this->request->getPost("address");
+      $employee->risk = $this->request->getPost("risk");
 
       if($success){
         $employee = EmployeeEmployees::findFirst("employee_id=$employee->id");
