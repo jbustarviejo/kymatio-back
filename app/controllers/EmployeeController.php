@@ -33,11 +33,22 @@ class EmployeeController extends Controller
         $employee = Employees::findFirst("id=$id");
       }else{
         $employee = new Employees();
-        $employee->departmentid = $this->request->getQuery("departmentid");
+        $employee->group_id = $this->request->getQuery("department_id");
       }
-      $employee->type = $this->request->getPost("type");
+
       $employee->name = $this->request->getPost("name");
+      $employee->type = $this->request->getPost("type");
+
       $success=$employee->save();
+
+      `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+      `name` varchar(70) NOT NULL,
+      `surname` varchar(100) DEFAULT NULL,
+      `email` varchar(70) DEFAULT NULL,
+      `address` varchar(200) DEFAULT NULL,
+      `risk` int DEFAULT 0,
+      `group_id` int unsigned NOT NULL,
+
 
       if($success){
         $employee = EmployeeEmployees::findFirst("employee_id=$employee->id");
